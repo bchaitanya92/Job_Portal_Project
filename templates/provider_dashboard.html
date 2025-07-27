@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Provider Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Your Posted Jobs & Applicants</h2>
+    {% if jobs %}
+        {% for job in jobs %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <strong>{{ job.job_title }}</strong> at {{ job.company }} ({{ job.location }})
+                </div>
+                <div class="card-body">
+                    <p><strong>Posted on:</strong> {{ job.date.strftime('%Y-%m-%d') }}</p>
+                    <p><strong>Salary:</strong> {{ job.salary }}</p>
+                    <h5>Applicants:</h5>
+                    {% if job_applicants[job.id] %}
+                        <ul class="list-group">
+                        {% for applicant in job_applicants[job.id] %}
+                            <li class="list-group-item">
+                                <strong>{{ applicant.name }}</strong> (<a href="mailto:{{ applicant.email }}">{{ applicant.email }}</a>)<br>
+                                <a href="{{ applicant.profile_link }}">Profile</a>
+                                {% if applicant.resume_link %} | <a href="{{ applicant.resume_link }}">Resume</a>{% endif %}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No applicants yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You have not posted any jobs yet.</p>
+    {% endif %}
+</div>
+{% endblock %} 

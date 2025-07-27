@@ -13,6 +13,8 @@ class JobPortal(db.Model):
     location = db.Column(db.String(100), nullable=False)
     date = db.Column(db.Date, nullable=False)
     salary = db.Column(db.Integer, nullable=False)
+    provider_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # New: link to User
+    provider = db.relationship('User', backref='posted_jobs')  # New: relationship
 
     @validates('company_score')
     def validate_company_score(self, key, value):
@@ -20,13 +22,13 @@ class JobPortal(db.Model):
             raise ValueError("Company score must be between 0 and 5.")
         return value
     
-    def __init__(self, company, company_score, job_title, location, date, salary):
-        self.company = company
-        self.company_score = company_score
-        self.job_title = job_title
-        self.location = location
-        self.date = date
-        self.salary = salary
+    # def __init__(self, company, company_score, job_title, location, date, salary):
+    #     self.company = company
+    #     self.company_score = company_score
+    #     self.job_title = job_title
+    #     self.location = location
+    #     self.date = date
+    #     self.salary = salary
 
     def to_dict(self):
         return {
@@ -93,3 +95,17 @@ class FailedLoginAttempt(db.Model):
 
     def __repr__(self):
         return f'<FailedLoginAttempt {self.user_id} {self.timestamp}>'
+
+class Application(db.Model):
+    __tablename__ = 'applications'
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job_portal.id'), nullable=False)
+    seeker_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    applied_at = db.Column(db.DateTime, default=datetime.utcnow)
+    resume_link = db.Column(db.String(256), nullable=True)
+
+    job = db.relationship('JobPortal', backref='applications')
+    seeker = db.relationship('User', backref='applications')
+
+    def __repr__(self):
+        return f'<Application job_id={self.job_id} seeker_id={self.seeker_id}>'

@@ -68,8 +68,13 @@
                 </div>
                 
                 <div class="form-group">
-                    {{ form.role.label }}
-                    {{ form.role(class="form-control") }}
+                    <label for="role" class="form-label fw-semibold">Select Role</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="fas fa-user-tag text-muted"></i>
+                        </span>
+                        {{ form.role(class="form-select", id="role") }}
+                    </div>
                     {% if form.role.errors %}
                         <div class="invalid-feedback d-block">
                             {% for error in form.role.errors %}
@@ -78,6 +83,8 @@
                         </div>
                     {% endif %}
                 </div>
+                
+                
                 
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
@@ -145,6 +152,37 @@
     font-size: 0.875rem;
     margin-top: 0.25rem;
 }
+
+.role-dropdown .input-group-text {
+    background-color: #f1f1f1;
+    border: 1px solid #ced4da;
+    border-right: none;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px 0 0 6px;
+}
+
+.role-dropdown .form-select {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-group .form-label {
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.text-center a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.text-center a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
 </style>
 
 <script>

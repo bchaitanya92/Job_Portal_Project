@@ -3,7 +3,7 @@ from flask import Flask, flash, jsonify, render_template, request, redirect, ses
 from datetime import datetime
 from flask_migrate import Migrate
 from flask_session import Session
-from models.Job import User, JobPortal
+from models.Job import User, JobPortal, Application
 from utils.db import db
 from sqlalchemy import or_
 from werkzeug.exceptions import NotFound
@@ -13,6 +13,8 @@ from flask_wtf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from forms import SignupForm, LoginForm, ContactForm, JobForm
 from data_processor import process_job_data, get_jobs_by_page, get_total_pages
+from werkzeug.utils import secure_filename
+import pandas as pd
 
 
 
@@ -138,21 +140,51 @@ def single_blog():
 @app.route('/Job_L', methods=['GET', 'POST'])
 def Job_L():
     try:
-        # Load and process CSV data
+        # Load jobs from database (user-posted jobs)
+        db_jobs = JobPortal.query.all()
+        db_job_dicts = []
+        for job in db_jobs:
+            db_job_dicts.append({
+                'id': job.id,
+                'Company': job.company,
+                'Company Score': job.company_score,
+                'Job Title': job.job_title,
+                'Location': job.location,
+                'Date': job.date.strftime('%Y-%m-%d'),
+                'Salary': job.salary,
+                'provider_name': job.provider.username if job.provider else None,
+                'provider_email': job.provider.email if job.provider else None
+            })
+
+        # Load and process CSV jobs
         csv_file_path = 'SE salaries final.csv'
-        all_jobs = process_job_data(csv_file_path)
-        
-        # Apply filters
+        csv_jobs = process_job_data(csv_file_path)
+        for job in csv_jobs:
+            job['provider_name'] = 'B. Chaitanya'
+            job['provider_email'] = 'bchaitanya7174@gmail.com'
+
+        # Merge both lists
+        all_jobs = db_job_dicts + csv_jobs
+
+        # Apply filters (if any)
         filtered_jobs = filter_jobs(all_jobs, request.args)
-        
-        # Get pagination parameters
+
+        # Pagination
         page = request.args.get('page', 1, type=int)
-        per_page = 12  # Jobs per page
-        
-        # Get jobs for current page
+        per_page = 12
         jobs = get_jobs_by_page(filtered_jobs, page, per_page)
         total_pages = get_total_pages(filtered_jobs, per_page)
-        
+
+        # Sort by date if requested
+        sort_date = request.args.get('sort_date', 'desc')
+        def parse_date(job):
+            from datetime import datetime
+            try:
+                return datetime.strptime(job['Date'], '%Y-%m-%d')
+            except Exception:
+                return datetime.min
+        jobs = sorted(jobs, key=parse_date, reverse=(sort_date == 'desc'))
+
         return render_template('Job_L.html', 
                              jobs=jobs, 
                              current_page=page, 
@@ -164,29 +196,28 @@ def Job_L():
         return render_template('Job_L.html', jobs=[], current_page=1, total_pages=1, total_jobs=0)
 
 def filter_jobs(jobs, filters):
-    """Filter jobs based on user criteria"""
+    """Advanced filter jobs based on user criteria"""
     filtered = jobs
-    
     # Filter by location
     if filters.get('location'):
         location_filter = filters['location'].lower()
         filtered = [job for job in filtered if location_filter in job['Location'].lower()]
-    
     # Filter by job title
     if filters.get('job_title'):
         title_filter = filters['job_title'].lower()
         filtered = [job for job in filtered if title_filter in job['Job Title'].lower()]
-    
     # Filter by company
     if filters.get('company'):
         company_filter = filters['company'].lower()
         filtered = [job for job in filtered if company_filter in job['Company'].lower()]
-    
     # Filter by salary range
     if filters.get('salary_range'):
         salary_range = filters['salary_range']
-        filtered = [job for job in filtered if check_salary_range(job['Salary'], salary_range)]
-    
+        filtered = [job for job in filtered if check_salary_range(str(job['Salary']), salary_range)]
+    # Filter by provider
+    if filters.get('provider_name'):
+        provider_filter = filters['provider_name'].lower()
+        filtered = [job for job in filtered if provider_filter in (job.get('provider_name') or '').lower()]
     return filtered
 
 def check_salary_range(salary_str, range_filter):
@@ -271,24 +302,56 @@ def submit_application(job_id):
     if current_user.role != 'user':
         flash('Only job seekers can apply for jobs.', 'error')
         return redirect(url_for('Job_L'))
-    
     try:
         # Get form data
         message = request.form.get('message', '').strip()
         resume_file = request.files.get('resume')
-        
         # Validate required fields
         if not message:
             flash('Please provide a message with your application.', 'error')
             return redirect(url_for('apply_job_page', id=job_id))
-        
-        # Here you would typically save the application to a database
-        # For now, we'll just show a success message
-        flash('Your application has been submitted successfully!', 'success')
+        # Handle resume upload
+        resume_link = None
+        if resume_file and resume_file.filename:
+            filename = secure_filename(f"{current_user.username}_{job_id}_{resume_file.filename}")
+            resume_path = os.path.join('static', 'Doc', filename)
+            abs_resume_path = os.path.join(app.root_path, resume_path)
+            os.makedirs(os.path.dirname(abs_resume_path), exist_ok=True)
+            resume_file.save(abs_resume_path)
+            resume_link = '/' + resume_path.replace('\\', '/')
+        # Save application record
+        application = Application(job_id=job_id, seeker_id=current_user.id, resume_link=resume_link)
+        db.session.add(application)
+        db.session.commit()
+        # Email notifications
+        job = JobPortal.query.get(job_id)
+        provider_email = job.provider.email if job and job.provider else 'bchaitanya7174@gmail.com'
+        seeker_email = current_user.email
+        # Email to provider
+        try:
+            msg = Message(
+                subject=f"New Application for {job.job_title if job else 'Job'}",
+                recipients=[provider_email],
+                body=f"A new application has been submitted by {current_user.username} for your job posting."
+            )
+            mail.send(msg)
+        except Exception as e:
+            print(f"Error sending provider email: {e}")
+        # Email to seeker
+        try:
+            msg = Message(
+                subject=f"Application Received: {job.job_title if job else 'Job'}",
+                recipients=[seeker_email],
+                body=f"Your application for {job.job_title if job else 'the job'} has been received."
+            )
+            mail.send(msg)
+        except Exception as e:
+            print(f"Error sending seeker email: {e}")
+        flash('Applied for the job', 'success')
         return redirect(url_for('Job_L'))
-        
     except Exception as e:
         flash('An error occurred while submitting your application.', 'error')
+        db.session.rollback()
         return redirect(url_for('Job_L'))
 
 # Upload CV Page
@@ -322,6 +385,7 @@ def submit():
         company_score = float(form_data.get('company_score', 0))  # Default to 0 if missing
         salary = int(form_data.get('salary', 0))  # Default to 0 if missing
         date_obj = datetime.strptime(form_data['date'], '%Y-%m-%d').date()
+        provider_id = current_user.id if hasattr(current_user, 'id') else None
 
         job = JobPortal(
             company=form_data['company'],
@@ -329,7 +393,8 @@ def submit():
             job_title=form_data['job_title'],
             location=form_data['location'],
             date=date_obj,
-            salary=salary
+            salary=salary,
+            provider_id=provider_id
         )
 
         db.session.add(job)
@@ -644,6 +709,62 @@ def logout():
     logout_user()
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('home'))
+
+@app.route('/provider_dashboard')
+@login_required
+def provider_dashboard():
+    if current_user.role != 'admin':
+        flash('Only job providers can access the dashboard.', 'error')
+        return redirect(url_for('Job_L'))
+    jobs = JobPortal.query.filter_by(provider_id=current_user.id).all()
+    job_applicants = {}
+    for job in jobs:
+        applicants = []
+        for app in job.applications:
+            seeker = app.seeker
+            applicants.append({
+                'name': seeker.username,
+                'email': seeker.email,
+                'profile_link': url_for('profile', _external=True),
+                'resume_link': app.resume_link
+            })
+        job_applicants[job.id] = applicants
+    return render_template('provider_dashboard.html', jobs=jobs, job_applicants=job_applicants)
+
+@app.route('/import_csv', methods=['GET', 'POST'])
+@login_required
+def import_csv():
+    if current_user.role != 'admin':
+        flash('Only job providers can import jobs.', 'error')
+        return redirect(url_for('Job_L'))
+    if request.method == 'POST':
+        file = request.files.get('csv_file')
+        if not file:
+            flash('No file uploaded.', 'error')
+            return redirect(request.url)
+        filename = secure_filename(file.filename)
+        df = pd.read_csv(file)
+        # Find or create the static provider
+        provider = User.query.filter_by(email='bchaitanya7174@gmail.com').first()
+        if not provider:
+            provider = User(username='B. Chaitanya', email='bchaitanya7174@gmail.com', password='defaultpassword', role='admin')
+            db.session.add(provider)
+            db.session.commit()
+        for _, row in df.iterrows():
+            job = JobPortal(
+                company=row.get('Company', 'Unknown Company'),
+                company_score=float(row.get('Company Score', 0)),
+                job_title=row.get('Job Title', 'Unknown Position'),
+                location=row.get('Location', 'Unknown'),
+                date=datetime.now().date(),
+                salary=int(row.get('Salary', 0)),
+                provider_id=provider.id
+            )
+            db.session.add(job)
+        db.session.commit()
+        flash('Jobs imported successfully!', 'success')
+        return redirect(url_for('Job_L'))
+    return render_template('import_csv.html')
 
 if __name__ == '__main__':
     app.run(

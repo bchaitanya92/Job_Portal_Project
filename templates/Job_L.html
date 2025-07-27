@@ -39,64 +39,75 @@
 
     <!-- Enhanced Filter Section -->
     <div class="filter-section mb-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="card-header bg-white border-bottom-0 pb-0">
                 <h5 class="mb-0 text-primary">
                     <i class="fas fa-filter me-2"></i>Filter Jobs
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body pt-2">
                 <form method="GET" action="{{ url_for('Job_L') }}" id="filterForm">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="location" class="form-label fw-bold">
-                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>Location
-                                </label>
-                                <input type="text" class="form-control" id="location" name="location" 
-                                       placeholder="Remote, New York..." value="{{ request.args.get('location', '') }}">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-2 col-12">
+                            <div class="form-group position-relative">
+                                <label for="location" class="form-label fw-bold">Location</label>
+                                <input type="text" class="form-control filter-input" id="location" name="location" placeholder="Remote, New York..." value="{{ request.args.get('location', '') }}">
+                                {% if request.args.get('location') %}
+                                <span class="reset-icon" onclick="document.getElementById('location').value='';">&times;</span>
+                                {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="job_title" class="form-label fw-bold">
-                                    <i class="fas fa-briefcase me-1 text-muted"></i>Job Title
-                                </label>
-                                <input type="text" class="form-control" id="job_title" name="job_title" 
-                                       placeholder="Software Engineer..." value="{{ request.args.get('job_title', '') }}">
+                        <div class="col-md-2 col-12">
+                            <div class="form-group position-relative">
+                                <label for="job_title" class="form-label fw-bold">Job Title</label>
+                                <input type="text" class="form-control filter-input" id="job_title" name="job_title" placeholder="Software Engineer..." value="{{ request.args.get('job_title', '') }}">
+                                {% if request.args.get('job_title') %}
+                                <span class="reset-icon" onclick="document.getElementById('job_title').value='';">&times;</span>
+                                {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="company" class="form-label fw-bold">
-                                    <i class="fas fa-building me-1 text-muted"></i>Company
-                                </label>
-                                <input type="text" class="form-control" id="company" name="company" 
-                                       placeholder="Google, Microsoft..." value="{{ request.args.get('company', '') }}">
+                        <div class="col-md-2 col-12">
+                            <div class="form-group position-relative">
+                                <label for="company" class="form-label fw-bold">Company</label>
+                                <input type="text" class="form-control filter-input" id="company" name="company" placeholder="Google, Microsoft..." value="{{ request.args.get('company', '') }}">
+                                {% if request.args.get('company') %}
+                                <span class="reset-icon" onclick="document.getElementById('company').value='';">&times;</span>
+                                {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="salary_range" class="form-label fw-bold">
-                                    <i class="fas fa-dollar-sign me-1 text-muted"></i>Salary Range
-                                </label>
-                                <select class="form-select" id="salary_range" name="salary_range">
+                        <div class="col-md-2 col-12">
+                            <div class="form-group position-relative">
+                                <label for="salary_range" class="form-label fw-bold">Salary Range</label>
+                                <select class="form-select filter-input" id="salary_range" name="salary_range">
                                     <option value="">All Salaries</option>
-                                    <option value="0-50000" {{ 'selected' if request.args.get('salary_range') == '0-50000' }}>$0 - $50,000</option>
+                                    <option value="0-50000" {{ 'selected' if request.args.get('salary_range') == '0-50000' }}> $0 - $50,000</option>
                                     <option value="50000-100000" {{ 'selected' if request.args.get('salary_range') == '50000-100000' }}>$50,000 - $100,000</option>
                                     <option value="100000-150000" {{ 'selected' if request.args.get('salary_range') == '100000-150000' }}>$100,000 - $150,000</option>
                                     <option value="150000+" {{ 'selected' if request.args.get('salary_range') == '150000+' }}>$150,000+</option>
                                 </select>
+                                {% if request.args.get('salary_range') %}
+                                <span class="reset-icon" onclick="document.getElementById('salary_range').selectedIndex=0;">&times;</span>
+                                {% endif %}
                             </div>
                         </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary px-4 py-2 me-2">
-                                <i class="fas fa-search me-2"></i>Apply Filters
+                        <div class="col-md-2 col-12">
+                            <div class="form-group position-relative">
+                                <label for="sort_date" class="form-label fw-bold">Sort by Date</label>
+                                <select class="form-select filter-input" id="sort_date" name="sort_date">
+                                    <option value="desc" {% if request.args.get('sort_date', 'desc') == 'desc' %}selected{% endif %}>Newest First</option>
+                                    <option value="asc" {% if request.args.get('sort_date') == 'asc' %}selected{% endif %}>Oldest First</option>
+                                </select>
+                                {% if request.args.get('sort_date') %}
+                                <span class="reset-icon" onclick="document.getElementById('sort_date').selectedIndex=0;">&times;</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-12 filter-btn-group d-flex gap-2 align-items-end">
+                            <button type="submit" class="btn btn-primary filter-btn">
+                                <i class="fas fa-search me-2"></i>Apply
                             </button>
-                            <a href="{{ url_for('Job_L') }}" class="btn btn-outline-secondary px-4 py-2">
-                                <i class="fas fa-times me-2"></i>Clear Filters
+                            <a href="{{ url_for('Job_L') }}" class="btn btn-outline-secondary filter-btn">
+                                <i class="fas fa-times me-2"></i>Clear
                             </a>
                         </div>
                     </div>
@@ -123,6 +134,17 @@
                             <i class="fas fa-building me-2"></i>{{ job['Company'] }}
                         </h6>
                         
+                        <!-- Provider Details -->
+                        <div class="provider-details mb-2">
+                            <i class="fas fa-user-tie me-2 text-secondary"></i>
+                            <span class="fw-bold">Provider:</span>
+                            {% if job['provider_name'] %}
+                                {{ job['provider_name'] }}
+                            {% else %}
+                                B. Chaitanya
+                            {% endif %}
+                        </div>
+                        
                         <!-- Compact Job Details -->
                         <div class="job-details mb-3">
                             <div class="row g-2">
@@ -134,7 +156,7 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="detail-item d-flex align-items-center">
-                                        <i class="fas fa-dollar-sign text-success me-2"></i>
+                                        {# <i class="fas fa-dollar-sign text-success me-2"></i> #}
                                         <span class="text-success fw-bold small">{{ job['Salary'] }}</span>
                                     </div>
                                 </div>
@@ -148,15 +170,15 @@
                         </div>
                     </div>
                     
-                    <!-- Action Buttons -->
+                    <!-- Action Buttons (Updated) -->
                     <div class="card-footer bg-transparent border-0 pt-0">
-                        <div class="d-grid gap-2">
+                        <div class="d-flex justify-content-between gap-2">
                             {% if current_user.is_authenticated and current_user.role == 'user' %}
-                            <a href="{{ url_for('apply_job_page', id=job['id']) }}" class="btn btn-primary btn-sm">
+                            <a href="{{ url_for('apply_job_page', id=job['id']) }}" class="btn btn-primary btn-action">
                                 <i class="fas fa-paper-plane me-2"></i>Apply Now
                             </a>
                             {% endif %}
-                            <a href="{{ url_for('view_job_details', id=job['id']) }}" class="btn btn-outline-primary btn-sm">
+                            <a href="{{ url_for('view_job_details', id=job['id']) }}" class="btn btn-outline-primary btn-action">
                                 <i class="fas fa-eye me-2"></i>View Details
                             </a>
                         </div>
@@ -254,60 +276,132 @@
 
 /* Enhanced Filter Section */
 .filter-section .card {
-    border-radius: 12px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
 }
-
-.filter-section .form-control,
-.filter-section .form-select {
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    transition: all 0.3s ease;
+.filter-section .form-label {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #2d2d2d;
+    letter-spacing: 0.01em;
 }
-
-.filter-section .form-control:focus,
-.filter-section .form-select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+.filter-section .form-group {
+    margin-bottom: 0;
+    position: relative;
 }
-
-/* Button Enhancements */
-.btn {
-    border-radius: 8px;
+input.filter-input {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.filter-input {
+    border-radius: 10px;
+    border: 1.5px solid #e0e0e0;
+    font-size: 1.08rem;
+    height: 48px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fff;
     font-weight: 500;
-    transition: all 0.3s ease;
+    padding-left: 1.1rem;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
 }
-
-.btn-primary {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+.filter-input:focus {
+    border-color: #5a67d8;
+    box-shadow: 0 0 0 0.2rem rgba(90,103,216,0.10);
+    background: #f8faff;
+}
+.filter-section .form-select {
+    min-width: 140px;
+    width: 100%;
+    max-width: 100%;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+.filter-btn-group {
+    display: flex;
+    gap: 0.75rem;
+    align-items: stretch;
+    width: 100%;
+}
+.filter-btn {
+    font-size: 1.08rem;
+    font-weight: 700;
+    height: 48px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.01em;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 1.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-primary.filter-btn {
+    background: linear-gradient(90deg, #4f8cff 0%, #6a82fb 100%);
     border: none;
+    color: #fff;
 }
-
-.btn-primary:hover {
-    background: linear-gradient(135deg, #0056b3, #004085);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+.btn-primary.filter-btn:hover, .btn-primary.filter-btn:focus {
+    background: linear-gradient(90deg, #6a82fb 0%, #4f8cff 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(90,103,216,0.15);
 }
-
-.btn-outline-primary {
-    border-color: #007bff;
-    color: #007bff;
+.btn-outline-secondary.filter-btn {
+    border-color: #b0b0b0;
+    color: #6a82fb;
+    background: #fff;
 }
-
-.btn-outline-primary:hover {
-    background-color: #007bff;
-    border-color: #007bff;
-    transform: translateY(-1px);
+.btn-outline-secondary.filter-btn:hover, .btn-outline-secondary.filter-btn:focus {
+    background: #6a82fb;
+    color: #fff;
+    border-color: #6a82fb;
+    box-shadow: 0 4px 16px rgba(90,103,216,0.10);
 }
-
-.btn-outline-secondary {
-    border-color: #6c757d;
-    color: #6c757d;
+.reset-icon {
+    position: absolute;
+    right: 12px;
+    top: 40px;
+    font-size: 1.3rem;
+    color: #b0b0b0;
+    cursor: pointer;
+    z-index: 2;
+    background: #fff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    display: inline-block;
 }
-
-.btn-outline-secondary:hover {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    transform: translateY(-1px);
+.reset-icon:hover {
+    color: #4f8cff;
+    background: #f0f4ff;
+}
+@media (max-width: 991px) {
+    .filter-section .row.g-3 > div {
+        margin-bottom: 1rem;
+    }
+}
+@media (max-width: 767px) {
+    .filter-section .row.g-3 {
+        flex-direction: column;
+    }
+    .filter-section .form-group {
+        margin-bottom: 1rem;
+    }
+    .filter-btn-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .filter-btn {
+        width: 100%;
+    }
 }
 
 /* Compact Job Details */
@@ -363,5 +457,51 @@
     background-color: #f8f9fa;
     border-color: #007bff;
 }
+
+.btn-action {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    flex: 1 1 0;
+    text-align: center;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.btn-action:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+
+.card-footer .btn {
+    width: 100%;
+}
+
+.card-footer .d-flex {
+    gap: 0.5rem;
+}
+
 </style>
+<script>
+// Make reset icons for dropdowns clear and submit the form
+document.addEventListener('DOMContentLoaded', function() {
+    function resetAndSubmit(id) {
+        var el = document.getElementById(id);
+        if (el) {
+            if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0;
+            } else {
+                el.value = '';
+            }
+            document.getElementById('filterForm').submit();
+        }
+    }
+    // Attach to reset icons for dropdowns
+    var salaryReset = document.querySelector('.reset-icon[onclick*="salary_range"]');
+    if (salaryReset) salaryReset.onclick = function() { resetAndSubmit('salary_range'); };
+    var sortReset = document.querySelector('.reset-icon[onclick*="sort_date"]');
+    if (sortReset) sortReset.onclick = function() { resetAndSubmit('sort_date'); };
+});
+</script>
 {% endblock %}

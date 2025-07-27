@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Import Jobs from CSV{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Import Jobs from CSV</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="csv_file" class="form-label">CSV File</label>
+            <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Import</button>
+    </form>
+</div>
+{% endblock %} 
