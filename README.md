@@ -263,6 +263,7 @@ python -c "from app import app, db; app.app_context().push(); db.create_all()"
 # 6. Run the server
 python app.py
 
+---
 
 ## 🌐 Access the Portal
 
