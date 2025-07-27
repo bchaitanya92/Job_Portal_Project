@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Portal | Login{% endblock %}
+
+{% block content %}
+<div class="login-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-container">
+                    <h2 class="text-center mb-4">Login</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form id="loginForm" action="{{ url_for('login') }}" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.username_or_email.label }}
+                    {{ form.username_or_email(class="form-control", placeholder="Enter username or email") }}
+                    {% if form.username_or_email.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.username_or_email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label }}
+                    <div class="password-container">
+                        {{ form.password(class="form-control", placeholder="Enter password") }}
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                {{ form.submit(class="btn btn-primary btn-block") }}
+            </form>
+            <div class="text-center mt-3">
+                <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.login-page-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    padding: 40px 0;
+}
+
+.login-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 40px;
+    width: 100%;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+}
+</style>
+
+<script>
+// Password visibility toggle
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordInput = document.getElementById('password');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        this.classList.remove('fa-eye');
+        this.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        this.classList.remove('fa-eye-slash');
+        this.classList.add('fa-eye');
+    }
+});
+</script>
+{% endblock %}

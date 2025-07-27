@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Portal | Contact{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+    <!-- Google Maps Section Start -->
+    <section class="google-map">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="map-title text-center">Our Location</h3>
+                    <div class="map-container">
+                        <!-- Embed Google Map -->
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3816.3941058479616!2d77.5401834!3d12.8593194!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae407386b7172d%3A0x1569e8679d608fe0!2sK+S+School+of+Engineering+and+Management!5e0!3m2!1sen!2sin!4v1625495599522!5m2!1sen!2sin" width="100%" height="400" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Google Maps Section End -->
+
+    <!-- ================ contact section start ================= -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="contact-title">Get in Touch</h2>
+                </div>
+                <div class="col-lg-8">
+                    <form class="form-contact contact_form" action="" method="POST" id="contactForm" novalidate="novalidate">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.message(class="form-control w-100", cols="30", rows="9", placeholder="Enter Message") }}
+                                    {% if form.message.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.message.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {{ form.name(class="form-control", placeholder="Enter your name") }}
+                                    {% if form.name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.name.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {{ form.email(class="form-control", placeholder="Enter email address") }}
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.email.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form.subject(class="form-control", placeholder="Enter Subject") }}
+                                    {% if form.subject.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.subject.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            {{ form.submit(class="button button-contactForm boxed-btn") }}
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-3 offset-lg-1">
+                    <div class="media contact-info">
+                        <span class="contact-info__icon"><i class="ti-home"></i></span>
+                        <div class="media-body">
+                            <h3>Job Portal, Karnataka.</h3>
+                            <p>Bengaluru, 5601999</p>
+                        </div>
+                    </div>
+                    <div class="media contact-info">
+                        <span class="contact-info__icon"><i class="ti-tablet"></i></span>
+                        <div class="media-body">
+                            <h3>+1 253 565 2365</h3>
+                            <p>Mon to Fri 9am to 6pm</p>
+                        </div>
+                    </div>
+                    <div class="media contact-info">
+                        <span class="contact-info__icon"><i class="ti-email"></i></span>
+                        <div class="media-body">
+                            <h3>support@jobportal.com</h3>
+                            <p>Send us your query anytime!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

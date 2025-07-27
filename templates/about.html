@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Portal | About{% endblock %}
+{% block content %}
+<main>
+
+
+        <!-- Support Company Start-->
+        <div class="support-company-area fix" style="padding-top: 50px; padding-bottom: 100px;">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-xl-6 col-lg-6">
+                        <div class="right-caption">
+                            <!-- Section Tittle -->
+                            <div class="section-tittle section-tittle2">
+                                <span>Empowering Careers</span>
+                                <h2>24k Talented Professionals Finding Their Dream Jobs</h2>
+                            </div>
+                            <div class="support-caption">
+                                <p class="pera-top">We connect skilled individuals with exceptional opportunities, bridging the gap between talent and success. Discover the career that fits you best.</p>
+                                <p>Our platform has been a trusted partner for both job seekers and employers since 1994, offering innovative solutions that inspire growth, excellence, and success in the workplace.</p>
+                                <a href="{{ url_for('Job_L') }}" class="btn post-btn">Job Hunt</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6">
+                        <div class="support-location-img">
+                            <img src="{{ url_for('static', filename='assets/img/service/support-img.jpg') }}" alt="">
+                            <div class="support-img-cap text-center">
+                                <p>Since</p>
+                                <span>2024</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Support Company End-->
+
+        <!-- How Apply Process Start-->
+        <div class="apply-process-area apply-bg pb-150" style="background: linear-gradient(to right, #ff7e5f, #feb47b); padding-top: 80px;">
+            <div class="container">
+                <!-- Section Tittle -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="section-tittle white-text text-center">
+                            <span>Apply process</span>
+                            <h2> How it works</h2>
+                        </div>
+                    </div>
+                </div>
+                <!-- Apply Process Caption -->
+                <div class="row">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="single-process text-center mb-30">
+                            <div class="process-ion">
+                                <span class="flaticon-search"></span>
+                            </div>
+                            <div class="process-cap">
+                                <h5>Submit Resume</h5>
+                            <p>Fill out the form with your details and upload your resume.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="single-process text-center mb-30">
+                            <div class="process-ion">
+                                <span class="flaticon-curriculum-vitae"></span>
+                            </div>
+                            <div class="process-cap">
+                                <h5>Employer Reviews</h5>
+                            <p>Your resume will be reviewed by our partner companies.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="single-process text-center mb-30">
+                            <div class="process-ion">
+                                <span class="flaticon-tour"></span>
+                            </div>
+                            <div class="process-cap">
+                                <h5>Get Hired</h5>
+                            <p>Once you're shortlisted, employers will contact you for an interview.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- How Apply Process End-->
+    </main>
+    
+{% endblock %}

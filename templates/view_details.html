@@ -1,0 +1,471 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Details | {{ job['Job Title'] }}{% endblock %}
+
+{% block content %}
+<!-- Enhanced Header Section -->
+<div class="job-details-header bg-gradient-primary text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 mb-2">{{ job['Job Title'] }}</h1>
+                <h4 class="mb-3 opacity-75">{{ job['Company'] }}</h4>
+                <div class="job-meta">
+                    <span class="badge bg-light text-dark me-2">
+                        <i class="fas fa-map-marker-alt me-1"></i>{{ job['Location'] }}
+                    </span>
+                    <span class="badge bg-success me-2">
+                        <i class="fas fa-dollar-sign me-1"></i>{{ job['Salary'] }}
+                    </span>
+                    <span class="badge bg-info">
+                        <i class="fas fa-star me-1"></i>{{ job['Company Score'] }}/5.0
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                {% if current_user.is_authenticated and current_user.role == 'user' %}
+                <a href="{{ url_for('apply_job_page', id=job['id']) }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-paper-plane me-2"></i>Apply Now
+                </a>
+                {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Apply
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mt-4">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <!-- Enhanced Job Details Card -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h3 class="card-title mb-0 text-primary">
+                        <i class="fas fa-briefcase me-2"></i>Job Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-building text-primary me-2"></i>Company
+                                </div>
+                                <div class="detail-value">{{ job['Company'] }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>Location
+                                </div>
+                                <div class="detail-value">{{ job['Location'] }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-dollar-sign text-success me-2"></i>Salary
+                                </div>
+                                <div class="detail-value salary-text">{{ job['Salary'] }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-clock text-info me-2"></i>Posted
+                                </div>
+                                <div class="detail-value">{{ job['Date'] }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-star text-warning me-2"></i>Company Rating
+                                </div>
+                                <div class="detail-value">
+                                    <span class="badge bg-primary">{{ job['Company Score'] }}/5.0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-hashtag text-secondary me-2"></i>Job ID
+                                </div>
+                                <div class="detail-value">#{{ job['id'] }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Job Description Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h3 class="card-title mb-0 text-primary">
+                        <i class="fas fa-file-alt me-2"></i>Job Description
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead mb-4">We are looking for a talented {{ job['Job Title'] }} to join our team at {{ job['Company'] }}.</p>
+                    
+                    <div class="job-sections">
+                        <div class="section mb-4">
+                            <h5 class="section-title text-primary">
+                                <i class="fas fa-tasks me-2"></i>Key Responsibilities
+                            </h5>
+                            <ul class="section-list">
+                                <li>Develop and maintain software applications</li>
+                                <li>Collaborate with cross-functional teams</li>
+                                <li>Write clean, maintainable code</li>
+                                <li>Participate in code reviews and technical discussions</li>
+                                <li>Stay updated with latest technologies and best practices</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="section mb-4">
+                            <h5 class="section-title text-primary">
+                                <i class="fas fa-graduation-cap me-2"></i>Requirements
+                            </h5>
+                            <ul class="section-list">
+                                <li>Bachelor's degree in Computer Science or related field</li>
+                                <li>Experience with modern programming languages</li>
+                                <li>Strong problem-solving skills</li>
+                                <li>Excellent communication and teamwork abilities</li>
+                                <li>Knowledge of software development methodologies</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="section">
+                            <h5 class="section-title text-primary">
+                                <i class="fas fa-gift me-2"></i>Benefits
+                            </h5>
+                            <ul class="section-list">
+                                <li>Competitive salary package</li>
+                                <li>Health insurance and retirement benefits</li>
+                                <li>Professional development opportunities</li>
+                                <li>Flexible work arrangements</li>
+                                <li>Modern office environment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Sidebar -->
+        <div class="col-lg-4">
+            <!-- Enhanced Quick Actions Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h4 class="card-title mb-0 text-primary">
+                        <i class="fas fa-rocket me-2"></i>Quick Actions
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        {% if current_user.is_authenticated and current_user.role == 'user' %}
+                        <a href="{{ url_for('apply_job_page', id=job['id']) }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>Apply For This Job
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Apply
+                        </a>
+                        {% endif %}
+                        
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-heart me-2"></i>Save Job
+                        </button>
+                        
+                        <button class="btn btn-outline-secondary">
+                            <i class="fas fa-share-alt me-2"></i>Share Job
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Company Information Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h4 class="card-title mb-0 text-primary">
+                        <i class="fas fa-building me-2"></i>Company Information
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="company-info">
+                        <h5 class="company-name mb-3">{{ job['Company'] }}</h5>
+                        <p class="company-desc text-muted mb-3">A leading technology company</p>
+                        
+                        <div class="info-item mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            <span>Rating: {{ job['Company Score'] }}/5.0</span>
+                        </div>
+                        
+                        <div class="info-item mb-2">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <span>Location: {{ job['Location'] }}</span>
+                        </div>
+                        
+                        <div class="info-item mb-2">
+                            <i class="fas fa-dollar-sign text-success me-2"></i>
+                            <span>Salary: {{ job['Salary'] }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Similar Jobs Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h4 class="card-title mb-0 text-primary">
+                        <i class="fas fa-briefcase me-2"></i>Similar Jobs
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="similar-jobs">
+                        <div class="similar-job-item mb-3 p-3 border rounded">
+                            <h6 class="job-title mb-1">Software Engineer</h6>
+                            <p class="company-location text-muted small mb-1">Tech Corp • Remote</p>
+                            <p class="salary text-success small fw-bold">$80,000 - $120,000</p>
+                        </div>
+                        
+                        <div class="similar-job-item mb-3 p-3 border rounded">
+                            <h6 class="job-title mb-1">Full Stack Developer</h6>
+                            <p class="company-location text-muted small mb-1">Innovation Inc. • New York</p>
+                            <p class="salary text-success small fw-bold">$90,000 - $130,000</p>
+                        </div>
+                        
+                        <div class="similar-job-item p-3 border rounded">
+                            <h6 class="job-title mb-1">Backend Engineer</h6>
+                            <p class="company-location text-muted small mb-1">StartupXYZ • San Francisco</p>
+                            <p class="salary text-success small fw-bold">$100,000 - $130,000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced CSS Styles -->
+<style>
+/* Modern Card Styling */
+.card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Header Gradient */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Enhanced Detail Items */
+.detail-item {
+    margin-bottom: 1rem;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.detail-value {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.salary-text {
+    color: #28a745 !important;
+    font-weight: 700;
+}
+
+/* Section Styling */
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.section-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.section-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.section-list li:before {
+    content: "•";
+    color: #007bff;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.section-list li:last-child {
+    border-bottom: none;
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+}
+
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
+}
+
+/* Company Info Styling */
+.company-name {
+    color: #333;
+    font-weight: 600;
+}
+
+.company-desc {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.info-item i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Similar Jobs Styling */
+.similar-job-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.similar-job-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(4px);
+}
+
+.job-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.company-location {
+    font-size: 0.8rem;
+}
+
+.salary {
+    font-size: 0.85rem;
+}
+
+/* Badge Styling */
+.badge {
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .job-details-header {
+        text-align: center;
+    }
+    
+    .col-md-4.text-md-end {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+}
+
+/* Enhanced Typography */
+.lead {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.opacity-75 {
+    opacity: 0.75;
+}
+</style>
+{% endblock %} 

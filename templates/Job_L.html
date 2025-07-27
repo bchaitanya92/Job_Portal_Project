@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Portal | Job Listings{% endblock %}
+
+{% block content %}
+<!-- Enhanced Header Section -->
+<div class="job-header bg-gradient-primary text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 mb-2">Software Engineering Jobs</h1>
+                <p class="lead mb-0 opacity-75">Discover exciting opportunities in software engineering</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="job-stats">
+                    <span class="badge bg-light text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-briefcase me-2"></i>{{ total_jobs }} Jobs Available
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mt-4">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Enhanced Filter Section -->
+    <div class="filter-section mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-primary">
+                    <i class="fas fa-filter me-2"></i>Filter Jobs
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('Job_L') }}" id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="location" class="form-label fw-bold">
+                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>Location
+                                </label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       placeholder="Remote, New York..." value="{{ request.args.get('location', '') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="job_title" class="form-label fw-bold">
+                                    <i class="fas fa-briefcase me-1 text-muted"></i>Job Title
+                                </label>
+                                <input type="text" class="form-control" id="job_title" name="job_title" 
+                                       placeholder="Software Engineer..." value="{{ request.args.get('job_title', '') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="company" class="form-label fw-bold">
+                                    <i class="fas fa-building me-1 text-muted"></i>Company
+                                </label>
+                                <input type="text" class="form-control" id="company" name="company" 
+                                       placeholder="Google, Microsoft..." value="{{ request.args.get('company', '') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="salary_range" class="form-label fw-bold">
+                                    <i class="fas fa-dollar-sign me-1 text-muted"></i>Salary Range
+                                </label>
+                                <select class="form-select" id="salary_range" name="salary_range">
+                                    <option value="">All Salaries</option>
+                                    <option value="0-50000" {{ 'selected' if request.args.get('salary_range') == '0-50000' }}>$0 - $50,000</option>
+                                    <option value="50000-100000" {{ 'selected' if request.args.get('salary_range') == '50000-100000' }}>$50,000 - $100,000</option>
+                                    <option value="100000-150000" {{ 'selected' if request.args.get('salary_range') == '100000-150000' }}>$100,000 - $150,000</option>
+                                    <option value="150000+" {{ 'selected' if request.args.get('salary_range') == '150000+' }}>$150,000+</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary px-4 py-2 me-2">
+                                <i class="fas fa-search me-2"></i>Apply Filters
+                            </button>
+                            <a href="{{ url_for('Job_L') }}" class="btn btn-outline-secondary px-4 py-2">
+                                <i class="fas fa-times me-2"></i>Clear Filters
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Job Listings -->
+    {% if jobs %}
+        <div class="row g-3">
+            {% for job in jobs %}
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="job-card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <!-- Header with Title and Rating -->
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0 fw-bold text-primary">{{ job['Job Title'] }}</h5>
+                            <span class="badge bg-primary rounded-pill fs-7">{{ job['Company Score'] }}/5.0</span>
+                        </div>
+                        
+                        <!-- Company Name -->
+                        <h6 class="company-name text-muted mb-3">
+                            <i class="fas fa-building me-2"></i>{{ job['Company'] }}
+                        </h6>
+                        
+                        <!-- Compact Job Details -->
+                        <div class="job-details mb-3">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="detail-item d-flex align-items-center">
+                                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                        <span class="text-muted small">{{ job['Location'] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="detail-item d-flex align-items-center">
+                                        <i class="fas fa-dollar-sign text-success me-2"></i>
+                                        <span class="text-success fw-bold small">{{ job['Salary'] }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="detail-item d-flex align-items-center">
+                                        <i class="fas fa-clock text-muted me-2"></i>
+                                        <span class="text-muted small">{{ job['Date'] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="d-grid gap-2">
+                            {% if current_user.is_authenticated and current_user.role == 'user' %}
+                            <a href="{{ url_for('apply_job_page', id=job['id']) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-paper-plane me-2"></i>Apply Now
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('view_job_details', id=job['id']) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-2"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Enhanced Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination-section mt-5">
+            <nav aria-label="Job listings pagination">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Page -->
+                    {% if current_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('Job_L', page=current_page-1) }}">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </span>
+                    </li>
+                    {% endif %}
+
+                    <!-- Page Numbers -->
+                    {% for page_num in range(1, total_pages + 1) %}
+                        {% if page_num == current_page %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% elif page_num <= 3 or page_num >= total_pages - 2 or (page_num >= current_page - 1 and page_num <= current_page + 1) %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('Job_L', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                        {% elif page_num == 4 and current_page > 6 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% elif page_num == total_pages - 3 and current_page < total_pages - 5 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Next Page -->
+                    {% if current_page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('Job_L', page=current_page+1) }}">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No jobs found</h4>
+            <p class="text-muted">Try adjusting your filters or check back later for new opportunities.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Enhanced CSS Styles -->
+<style>
+/* Modern Card Styling */
+.job-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.job-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+/* Enhanced Filter Section */
+.filter-section .card {
+    border-radius: 12px;
+}
+
+.filter-section .form-control,
+.filter-section .form-select {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+}
+
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
+}
+
+/* Compact Job Details */
+.detail-item {
+    margin-bottom: 0.5rem;
+}
+
+.detail-item i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Badge Styling */
+.badge {
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+}
+
+.fs-7 {
+    font-size: 0.75rem;
+}
+
+/* Header Gradient */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .job-card {
+        margin-bottom: 1rem;
+    }
+    
+    .filter-section .row {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Pagination Enhancement */
+.pagination .page-link {
+    border-radius: 6px;
+    margin: 0 2px;
+    border: 1px solid #e0e0e0;
+    color: #007bff;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.pagination .page-link:hover {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,568 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for {{ job['Job Title'] }}{% endblock %}
+
+{% block content %}
+<!-- Enhanced Header Section -->
+<div class="apply-header bg-gradient-primary text-white py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 mb-2">Apply for {{ job['Job Title'] }}</h1>
+                <h4 class="mb-3 opacity-75">{{ job['Company'] }}</h4>
+                <div class="job-meta">
+                    <span class="badge bg-light text-dark me-2">
+                        <i class="fas fa-map-marker-alt me-1"></i>{{ job['Location'] }}
+                    </span>
+                    <span class="badge bg-success me-2">
+                        <i class="fas fa-dollar-sign me-1"></i>{{ job['Salary'] }}
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('view_job_details', id=job['id']) }}" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Job
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mt-4">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <!-- Enhanced Application Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h3 class="card-title mb-0 text-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Application Form
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('submit_application', job_id=job['id']) }}" method="POST" enctype="multipart/form-data" id="applicationForm">
+                        <!-- Personal Information Section -->
+                        <div class="form-section mb-4">
+                            <h5 class="section-title text-primary mb-3">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="applicant_name" class="form-label fw-bold">Full Name</label>
+                                    <input type="text" class="form-control" id="applicant_name" name="applicant_name" 
+                                           value="{{ current_user.username }}" readonly>
+                                    <div class="form-text">Pre-filled from your profile</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="applicant_email" class="form-label fw-bold">Email Address</label>
+                                    <input type="email" class="form-control" id="applicant_email" name="applicant_email" 
+                                           value="{{ current_user.email }}" readonly>
+                                    <div class="form-text">Pre-filled from your profile</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resume Upload Section -->
+                        <div class="form-section mb-4">
+                            <h5 class="section-title text-primary mb-3">
+                                <i class="fas fa-file-upload me-2"></i>Resume/CV Upload
+                            </h5>
+                            <div class="upload-area">
+                                <label for="resume" class="form-label fw-bold">Resume/CV</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="resume" name="resume" 
+                                           accept=".pdf,.doc,.docx" required>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('resume').click()">
+                                        <i class="fas fa-upload me-2"></i>Choose File
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Accepted formats: PDF, DOC, DOCX (Max size: 5MB)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cover Letter Section -->
+                        <div class="form-section mb-4">
+                            <h5 class="section-title text-primary mb-3">
+                                <i class="fas fa-edit me-2"></i>Cover Letter / Message
+                            </h5>
+                            <div class="cover-letter-area">
+                                <label for="message" class="form-label fw-bold">Cover Letter</label>
+                                <textarea class="form-control" id="message" name="message" rows="6" 
+                                          placeholder="Tell us why you're interested in this position and why you'd be a great fit..." required></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    Please include your relevant experience, skills, and why you're interested in this role.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Questions Section -->
+                        <div class="form-section mb-4">
+                            <h5 class="section-title text-primary mb-3">
+                                <i class="fas fa-question-circle me-2"></i>Additional Questions
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="experience" class="form-label fw-bold">Years of Experience</label>
+                                    <select class="form-select" id="experience" name="experience" required>
+                                        <option value="">Select experience level</option>
+                                        <option value="0-1">0-1 years</option>
+                                        <option value="1-3">1-3 years</option>
+                                        <option value="3-5">3-5 years</option>
+                                        <option value="5-10">5-10 years</option>
+                                        <option value="10+">10+ years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="availability" class="form-label fw-bold">Availability to Start</label>
+                                    <select class="form-select" id="availability" name="availability" required>
+                                        <option value="">Select availability</option>
+                                        <option value="immediately">Immediately</option>
+                                        <option value="2-weeks">2 weeks notice</option>
+                                        <option value="1-month">1 month notice</option>
+                                        <option value="flexible">Flexible</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="salary_expectation" class="form-label fw-bold">Salary Expectation</label>
+                                    <input type="number" class="form-control" id="salary_expectation" name="salary_expectation" 
+                                           placeholder="80000" value="80000" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agreement Section -->
+                        <div class="form-section mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreement" name="agreement" required>
+                                <label class="form-check-label" for="agreement">
+                                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-check me-2"></i>Submit Application
+                            </button>
+                            <a href="{{ url_for('view_job_details', id=job['id']) }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Sidebar -->
+        <div class="col-lg-4">
+            <!-- Job Summary Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h4 class="card-title mb-0 text-primary">
+                        <i class="fas fa-briefcase me-2"></i>Job Summary
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="job-summary">
+                        <h5 class="job-title mb-3">{{ job['Job Title'] }}</h5>
+                        <div class="summary-item mb-2">
+                            <i class="fas fa-building text-primary me-2"></i>
+                            <span>{{ job['Company'] }}</span>
+                        </div>
+                        <div class="summary-item mb-2">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <span>{{ job['Location'] }}</span>
+                        </div>
+                        <div class="summary-item mb-2">
+                            <i class="fas fa-dollar-sign text-success me-2"></i>
+                            <span>{{ job['Salary'] }}</span>
+                        </div>
+                        <div class="summary-item mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            <span>{{ job['Company Score'] }}/5.0 Rating</span>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-clock text-info me-2"></i>
+                            <span>Posted {{ job['Date'] }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Tips Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h4 class="card-title mb-0 text-primary">
+                        <i class="fas fa-lightbulb me-2"></i>Application Tips
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="tips-list">
+                        <div class="tip-item mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Customize your cover letter for this specific role</span>
+                        </div>
+                        <div class="tip-item mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Highlight relevant skills and experience</span>
+                        </div>
+                        <div class="tip-item mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Keep your resume updated and professional</span>
+                        </div>
+                        <div class="tip-item mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Research the company before applying</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Follow up after submitting your application</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Need Help Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h4 class="card-title mb-0 text-primary">
+                        <i class="fas fa-question-circle me-2"></i>Need Help?
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p class="help-text mb-3">
+                        If you have any questions about this position or the application process, please contact us:
+                    </p>
+                    <div class="contact-info">
+                        <div class="contact-item mb-2">
+                            <i class="fas fa-envelope text-primary me-2"></i>
+                            <a href="mailto:careers@viewsoft.com" class="text-decoration-none">careers@viewsoft.com</a>
+                        </div>
+                        <div class="contact-item mb-2">
+                            <i class="fas fa-phone text-primary me-2"></i>
+                            <a href="tel:+15551234567" class="text-decoration-none">+1 (555) 123-4567</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            <span>Mon-Fri 9AM-5PM EST</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced CSS Styles -->
+<style>
+/* Modern Card Styling */
+.card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Header Gradient */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Form Section Styling */
+.form-section {
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+/* Enhanced Form Controls */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+/* Upload Area Styling */
+.upload-area {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: #007bff;
+    background-color: #f0f8ff;
+}
+
+/* Cover Letter Area */
+.cover-letter-area textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* Form Actions */
+.form-actions {
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+    margin-top: 2rem;
+}
+
+/* Job Summary Styling */
+.job-title {
+    color: #333;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.summary-item i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Tips List Styling */
+.tips-list {
+    padding: 0;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.tip-item i {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+/* Contact Info Styling */
+.help-text {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.contact-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.contact-item a {
+    color: #007bff;
+}
+
+.contact-item a:hover {
+    color: #0056b3;
+    text-decoration: underline !important;
+}
+
+/* Checkbox Styling */
+.form-check-input:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.form-check-label {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.form-check-label a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.form-check-label a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .apply-header {
+        text-align: center;
+    }
+    
+    .col-md-4.text-md-end {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+    
+    .form-section {
+        padding: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .form-actions {
+        text-align: center;
+    }
+    
+    .form-actions .btn {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Enhanced Typography */
+.opacity-75 {
+    opacity: 0.75;
+}
+
+/* Badge Styling */
+.badge {
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Input Group Styling */
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+</style>
+
+<!-- Form Validation Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('applicationForm');
+    const resumeInput = document.getElementById('resume');
+    const messageInput = document.getElementById('message');
+    const agreementCheckbox = document.getElementById('agreement');
+    
+    // File size validation
+    resumeInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const fileSize = file.size / 1024 / 1024; // Convert to MB
+            if (fileSize > 5) {
+                alert('File size must be less than 5MB');
+                this.value = '';
+            }
+        }
+    });
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        if (!agreementCheckbox.checked) {
+            e.preventDefault();
+            alert('Please agree to the Terms of Service and Privacy Policy');
+            return false;
+        }
+        
+        if (messageInput.value.trim().length < 50) {
+            e.preventDefault();
+            alert('Please provide a more detailed cover letter (at least 50 characters)');
+            messageInput.focus();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %} 

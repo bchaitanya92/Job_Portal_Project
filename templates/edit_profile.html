@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | Job Portal{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="edit-profile-header bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 mb-3">Edit Profile</h1>
+                <p class="lead mb-0">Update your account information and settings</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('profile') }}" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mt-5">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Profile Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('edit_profile') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       value="{{ user.username }}" required>
+                                <div class="form-text">Your unique username for the platform</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ user.email }}" required>
+                                <div class="form-text">We'll use this for important notifications</div>
+                            </div>
+                        </div>
+
+                        <!-- Account Type -->
+                        <div class="mb-4">
+                            <label class="form-label">Account Type</label>
+                            <div class="form-control-plaintext">
+                                <span class="badge bg-{{ 'primary' if user.role == 'user' else 'success' }}">
+                                    <i class="fas fa-{{ 'user' if user.role == 'user' else 'briefcase' }} me-2"></i>
+                                    {{ 'Job Seeker' if user.role == 'user' else 'Employer' }}
+                                </span>
+                            </div>
+                            <div class="form-text">Account type cannot be changed after registration</div>
+                        </div>
+
+                        <!-- Member Since -->
+                        <div class="mb-4">
+                            <label class="form-label">Member Since</label>
+                            <div class="form-control-plaintext">
+                                {% if user.created_at %}
+                                    {{ user.created_at.strftime('%B %d, %Y') }}
+                                {% else %}
+                                    Account created
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Password Change Section -->
+                        <h5 class="mb-3">
+                            <i class="fas fa-lock me-2"></i>Change Password
+                        </h5>
+                        <p class="text-muted mb-4">Leave blank if you don't want to change your password</p>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="current_password" class="form-label">Current Password</label>
+                                <input type="password" class="form-control" id="current_password" name="current_password" 
+                                       placeholder="Enter your current password">
+                                <div class="form-text">Required if changing password</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="new_password" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="new_password" name="new_password" 
+                                       placeholder="Enter new password">
+                                <div class="form-text">Minimum 6 characters</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                                       placeholder="Confirm new password">
+                                <div class="form-text">Must match new password</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Account Status -->
+                        <div class="mb-4">
+                            <label class="form-label">Account Status</label>
+                            <div class="form-control-plaintext">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Active
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Security Tips -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>Security Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Use a strong, unique password
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Never share your login credentials
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Keep your email address updated
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Log out when using shared devices
+                        </li>
+                        <li>
+                            <i class="fas fa-check text-success me-2"></i>
+                            Report any suspicious activity immediately
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .edit-profile-header .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .edit-profile-header .breadcrumb-item a {
+        text-decoration: none;
+    }
+    
+    .edit-profile-header .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid #e9ecef;
+        border-radius: 12px 12px 0 0 !important;
+    }
+    
+    .form-control,
+    .form-select {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .form-control-plaintext {
+        padding: 0.375rem 0.75rem;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    hr {
+        border-color: #e9ecef;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+        .edit-profile-header {
+            text-align: center;
+        }
+        
+        .d-flex.gap-3 {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<!-- JavaScript for password validation and form submission -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password validation
+    document.getElementById('new_password').addEventListener('input', function() {
+        const newPassword = this.value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        
+        if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+            document.getElementById('confirm_password').setCustomValidity('Passwords do not match');
+        } else {
+            document.getElementById('confirm_password').setCustomValidity('');
+        }
+    });
+
+    document.getElementById('confirm_password').addEventListener('input', function() {
+        const newPassword = document.getElementById('new_password').value;
+        const confirmPassword = this.value;
+        
+        if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+            this.setCustomValidity('Passwords do not match');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    // Form submission debugging
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        console.log('Form submitted');
+        
+        // Basic validation
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        
+        if (!username || !email) {
+            e.preventDefault();
+            alert('Username and email are required.');
+            return false;
+        }
+        
+        // Password validation
+        const newPassword = document.getElementById('new_password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const currentPassword = document.getElementById('current_password').value;
+        
+        if (newPassword && !currentPassword) {
+            e.preventDefault();
+            alert('Current password is required when changing password.');
+            return false;
+        }
+        
+        if (newPassword && newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('New passwords do not match.');
+            return false;
+        }
+        
+        if (newPassword && newPassword.length < 6) {
+            e.preventDefault();
+            alert('New password must be at least 6 characters long.');
+            return false;
+        }
+        
+        console.log('Form validation passed, submitting...');
+    });
+});
+
+// Show/hide password functionality
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const type = input.type === 'password' ? 'text' : 'password';
+    input.type = type;
+}
+</script>
+{% endblock %} 

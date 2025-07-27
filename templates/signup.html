@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Portal | Sign Up{% endblock %}
+
+{% block content %}
+<div class="signup-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="signup-container">
+                    <h2 class="text-center mb-4">Sign Up</h2>
+
+            <form action="{{ url_for('signup') }}" method="POST" id="signupForm" novalidate>
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(class="form-control", placeholder="Enter username") }}
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.username.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control", placeholder="Enter email") }}
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.password.label }}
+                    <div class="password-container">
+                        {{ form.password(class="form-control", placeholder="Enter password") }}
+                        <i class="fas fa-eye toggle-password" data-target="password"></i>
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.confirm_password.label }}
+                    <div class="password-container">
+                        {{ form.confirm_password(class="form-control", placeholder="Confirm password") }}
+                        <i class="fas fa-eye toggle-password" data-target="confirm_password"></i>
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.confirm_password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.role.label }}
+                    {{ form.role(class="form-control") }}
+                    {% if form.role.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.role.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="alert-container">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                {{ form.submit(class="btn btn-primary btn-block") }}
+            </form>
+
+            <div class="text-center mt-3">
+                <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+            </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.signup-page-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    padding: 40px 0;
+}
+
+.signup-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 40px;
+    width: 100%;
+}
+
+.password-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.password-strength {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.invalid-feedback {
+    display: none;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+</style>
+
+<script>
+document.getElementById('role').value = sessionStorage.getItem('role') || 'user';
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Password visibility toggle
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+        icon.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+    });
+
+    // Password validation
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const passwordMatchFeedback = document.getElementById('password-match-feedback');
+
+    function validatePasswords() {
+        if (confirmPassword.value !== password.value) {
+            confirmPassword.classList.add('is-invalid');
+            passwordMatchFeedback.style.display = 'block';
+            return false;
+        } else {
+            confirmPassword.classList.remove('is-invalid');
+            passwordMatchFeedback.style.display = 'none';
+            return true;
+        }
+    }
+
+    confirmPassword.addEventListener('input', validatePasswords);
+    password.addEventListener('input', validatePasswords);
+});
+</script>
+{% endblock %}

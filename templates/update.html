@@ -1,0 +1,126 @@
+{# update.html #}
+{% extends 'base.html' %}
+{% block title %}Job Portal | Update Job{% endblock %}
+
+{% block content %}
+<div class="container" style="margin: 0 auto; padding: 32px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 12px; max-width: 700px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="margin-bottom: 16px; padding: 16px; border-radius: 8px; {% if category == 'error' %}background-color: #ffebee; color: #d32f2f;{% else %}background-color: #e8f5e9; color: #388e3c;{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form id="updateForm" action="{{ url_for('edit_job', id=job.id) }}" method="POST" style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div style="margin-bottom: 24px;">
+            <label for="company" style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Company:</label>
+            <input type="text" id="company" name="company" value="{{ job.company }}" required 
+                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 14px; outline: none; transition: border-color 0.3s; box-sizing: border-box;" 
+                onfocus="this.style.borderColor='#3b82f6';">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label for="company_score" style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Company Score:</label>
+            <input type="number" step="0.1" min="0" max="5" id="company_score" name="company_score" 
+                value="{{ job.company_score }}" required 
+                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 14px; outline: none; transition: border-color 0.3s; box-sizing: border-box;" 
+                onfocus="this.style.borderColor='#3b82f6';">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label for="job_title" style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Job Title:</label>
+            <input type="text" id="job_title" name="job_title" value="{{ job.job_title }}" required 
+                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 14px; outline: none; transition: border-color 0.3s; box-sizing: border-box;" 
+                onfocus="this.style.borderColor='#3b82f6';">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label for="location" style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Location:</label>
+            <input type="text" id="location" name="location" value="{{ job.location }}" required 
+                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 14px; outline: none; transition: border-color 0.3s; box-sizing: border-box;" 
+                onfocus="this.style.borderColor='#3b82f6';">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label for="date" style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Date:</label>
+            <input type="date" id="date" name="date" value="{{ job.date.strftime('%Y-%m-%d') }}" required 
+                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 14px; outline: none; transition: border-color 0.3s; box-sizing: border-box;" 
+                onfocus="this.style.borderColor='#3b82f6';">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label for="salary" style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Salary:</label>
+            <input type="number" min="1" id="salary" name="salary" value="{{ job.salary }}" required 
+                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 14px; outline: none; transition: border-color 0.3s; box-sizing: border-box;" 
+                onfocus="this.style.borderColor='#3b82f6';">
+        </div>
+
+        <div style="display: flex; gap: 16px;">
+            <button type="submit" 
+                style="flex: 1; padding: 12px; background: linear-gradient(90deg, #3b82f6, #2563eb); color: white; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s; text-align: center;" 
+                onmouseover="this.style.background='linear-gradient(90deg, #2563eb, #1d4ed8)';" 
+                onmouseout="this.style.background='linear-gradient(90deg, #3b82f6, #2563eb)';">
+                Update Job
+            </button>
+            <a href="{{ url_for('Job_L') }}" 
+                style="flex: 1; padding: 12px; background: linear-gradient(90deg, #6b7280, #4b5563); color: white; font-weight: 600; text-decoration: none; border-radius: 8px; text-align: center; cursor: pointer; transition: background 0.3s;" 
+                onmouseover="this.style.background='linear-gradient(90deg, #4b5563, #374151)';" 
+                onmouseout="this.style.background='linear-gradient(90deg, #6b7280, #4b5563)';">
+                All Jobs
+            </a>
+        </div>
+    </form>
+</div>
+
+
+<script>
+document.getElementById('updateForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    // Get form values
+    const salary = document.getElementById('salary').value;
+    const companyScore = parseFloat(document.getElementById('company_score').value);
+    const company = document.getElementById('company').value.trim();
+    const jobTitle = document.getElementById('job_title').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const date = document.getElementById('date').value;
+
+    // Validation flags
+    let isValid = true;
+    let errorMessage = '';
+
+    // Required fields validation
+    if (!company || !jobTitle || !location || !date) {
+        errorMessage = 'All fields are required!';
+        isValid = false;
+    }
+    // Salary validation
+    else if (isNaN(salary) || parseInt(salary) <= 0) {
+        errorMessage = 'Salary must be a valid positive number!';
+        isValid = false;
+    }
+    // Company score validation
+    else if (isNaN(companyScore) || companyScore < 0 || companyScore > 5) {
+        errorMessage = 'Company score must be between 0 and 5!';
+        isValid = false;
+    }
+    // Date format validation
+    else if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        errorMessage = 'Invalid date format! Use YYYY-MM-DD.';
+        isValid = false;
+    }
+
+    if (!isValid) {
+        alert(errorMessage);
+        return;
+    }
+
+    // If all validations pass, submit the form
+    this.submit();
+});
+</script>
+{% endblock %}

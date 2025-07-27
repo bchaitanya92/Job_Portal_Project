@@ -1,0 +1,673 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Portal | Profile{% endblock %}
+
+{% block content %}
+<!-- Profile Header Section -->
+<div class="profile-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="avatar-section">
+                <div class="avatar-circle">
+                    <span class="avatar-text">{{ user.username[0].upper() }}</span>
+                </div>
+            </div>
+            <div class="welcome-section">
+                <h1 class="welcome-title">Hello, {{ user.username }}! 👋</h1>
+                <p class="welcome-subtitle">Welcome back to your job portal dashboard</p>
+                <div class="role-badge">
+                    {% if user.is_admin %}
+                        <span class="badge employer-badge">
+                            <i class="fas fa-briefcase"></i>
+                            Employer
+                        </span>
+                    {% else %}
+                        <span class="badge seeker-badge">
+                            <i class="fas fa-user"></i>
+                            Job Seeker
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container main-content">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }}"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="content-grid">
+        <!-- Profile Information Card -->
+        <div class="profile-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-user-circle"></i>
+                    Profile Information
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i>
+                            Username
+                        </div>
+                        <div class="info-value">{{ user.username }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-calendar"></i>
+                            Member Since
+                        </div>
+                        <div class="info-value">{{ user.created_at.strftime('%B %d, %Y') }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="fas fa-shield-alt"></i>
+                            Account Status
+                        </div>
+                        <div class="info-value">
+                            {% if user.is_active %}
+                                <span class="status-badge active">Active</span>
+                            {% else %}
+                                <span class="status-badge inactive">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                                        <div class="profile-actions">
+                            <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                                Edit Profile
+                            </a>
+                            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="actions-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-rocket"></i>
+                    Quick Actions
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="actions-grid">
+                    {% if user.is_admin %}
+                        <!-- Employer Actions -->
+                        <a href="{{ url_for('single_blog') }}" class="action-item employer-action">
+                            <div class="action-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Post New Job</h4>
+                                <p>Create and publish new job opportunities</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{{ url_for('manipulate') }}" class="action-item employer-action">
+                            <div class="action-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Manage Jobs</h4>
+                                <p>Edit, update, or remove job postings</p>
+                            </div>
+                        </a>
+                    {% else %}
+                        <!-- Job Seeker Actions -->
+                        <a href="{{ url_for('Job_L') }}" class="action-item seeker-action">
+                            <div class="action-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Browse Jobs</h4>
+                                <p>Explore available job opportunities</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{{ url_for('upload_cv') }}" class="action-item seeker-action">
+                            <div class="action-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Upload CV</h4>
+                                <p>Update your resume and profile</p>
+                            </div>
+                        </a>
+                    {% endif %}
+                    
+                    <!-- Common Actions -->
+                    <a href="{{ url_for('contact') }}" class="action-item common-action">
+                        <div class="action-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Contact Support</h4>
+                            <p>Get help or report issues</p>
+                        </div>
+                    </a>
+                    
+                    <a href="{{ url_for('home') }}" class="action-item common-action">
+                        <div class="action-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Go Home</h4>
+                            <p>Return to the main dashboard</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="activity-section">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line"></i>
+                    Recent Activity
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="activity-timeline">
+                                                <div class="activity-item">
+                                <div class="activity-icon success">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Last Login</h4>
+                                    <p>You logged in successfully</p>
+                                    <small>{{ current_time }}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon info">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Account Created</h4>
+                                    <p>Your account was successfully created</p>
+                                    <small>{{ user.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Profile Page -->
+<style>
+    /* Reset and Base Styles */
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .avatar-section {
+        flex-shrink: 0;
+    }
+
+    .avatar-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .avatar-text {
+        font-size: 3rem;
+        font-weight: bold;
+        color: white;
+    }
+
+    .welcome-section {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+    }
+
+    .role-badge {
+        margin-top: 1rem;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .employer-badge {
+        background: #28a745;
+        color: white;
+    }
+
+    .seeker-badge {
+        background: #17a2b8;
+        color: white;
+    }
+
+    /* Main Content */
+    .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Cards */
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .card-title {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #495057;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Profile Information */
+    .info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .info-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-badge.active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-badge.inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .profile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .btn-outline-primary {
+        color: #007bff;
+        border-color: #007bff;
+        background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+        background: transparent;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: white;
+    }
+
+    /* Actions Grid */
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .action-item {
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-decoration: none;
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-height: 140px;
+    }
+
+    .action-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+        color: white;
+    }
+
+    .action-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .action-item:hover::before {
+        opacity: 1;
+    }
+
+    .employer-action {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    }
+
+    .seeker-action {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    }
+
+    .common-action {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    }
+
+    .action-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+    }
+
+    .action-content h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .action-content p {
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.9;
+        line-height: 1.4;
+    }
+
+    /* Activity Section */
+    .activity-section {
+        margin-top: 2rem;
+    }
+
+    .activity-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: white;
+    }
+
+    .activity-icon.success {
+        background: #28a745;
+    }
+
+    .activity-icon.info {
+        background: #17a2b8;
+    }
+
+    .activity-content h4 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .activity-content p {
+        margin: 0 0 0.25rem 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .activity-content small {
+        color: #adb5bd;
+        font-size: 0.8rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            padding: 2rem 0;
+        }
+
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+        }
+
+        .avatar-text {
+            font-size: 2.5rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+        }
+
+        .actions-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .action-item {
+            min-height: 120px;
+            padding: 1.25rem;
+        }
+
+        .action-icon {
+            font-size: 1.5rem;
+        }
+
+        .card-header,
+        .card-body {
+            padding: 1.25rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .main-content {
+            padding: 0 0.5rem;
+        }
+
+        .welcome-title {
+            font-size: 1.75rem;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 12px;
+        border: none;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .alert i {
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %} 

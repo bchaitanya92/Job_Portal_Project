@@ -1,0 +1,99 @@
+<!-- Navigation Bar -->
+<header>
+    <div class="header-area header-transparrent">
+        <div class="headder-top header-sticky">
+            <div class="container">
+                <div class="row align-items-center justify-content-between">
+                    <!-- Logo Section -->
+                    <div class="col-lg-3 col-md-2">
+                        <div class="logo">
+                            <a href="{{ url_for('index') }}">
+                                <img src="{{ url_for('static', filename='assets/img/logo/logo.png') }}" alt="Job Portal Logo">
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Menu -->
+                    <div class="col-lg-9 col-md-9 d-flex justify-content-between align-items-center">
+                        <div class="main-menu">
+                            <nav>
+                                <ul id="navigation" class="d-flex list-unstyled mb-0">
+                                    <li data-role="all">
+                                        <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                                    </li>
+                                    <li data-role="all">
+                                        <a href="{{ url_for('Job_L') }}" class="nav-link">Job Hunt</a>
+                                    </li>
+                                    <li data-role="all">
+                                        <a href="{{ url_for('about') }}" class="nav-link">About</a>
+                                    </li>
+                                    <li data-role="admin">
+                                        <a href="{{ url_for('single_blog') }}" id="post-job-link" class="nav-link">Post Job</a>
+                                    </li>
+                                    <li data-role="all">
+                                        <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        
+                        <!-- Authentication Buttons -->
+                        <div class="header-btn d-flex gap-3 align-items-center" id="auth-buttons">
+                            {% if current_user.is_authenticated %}
+                                <span class="welcome-message">
+                                    Welcome, {{ current_user.username }}
+                                </span>
+                                <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Profile</a>
+                                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">Logout</a>
+                            {% else %}
+                                <a href="{{ url_for('signup') }}" class="btn btn-outline-primary">Sign Up</a>
+                                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary">Login</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Navigation JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    {% if current_user.is_authenticated %}
+        const role = '{{ current_user.role }}';
+    {% else %}
+        const role = 'guest';
+    {% endif %}
+    
+    const navItems = document.querySelectorAll('[data-role]');
+    const postJobLink = document.getElementById('post-job-link');
+
+    // Control visibility of nav items based on role
+    navItems.forEach(item => {
+        const itemRole = item.getAttribute('data-role');
+        if (itemRole !== 'all' && itemRole !== role) {
+            item.style.display = 'none';
+        }
+    });
+
+    // Make "Post Job" non-functional for regular users
+    if (role === 'user' && postJobLink) {
+        postJobLink.classList.add('disabled');
+        postJobLink.style.pointerEvents = 'none';
+        postJobLink.style.color = 'gray';
+        postJobLink.style.opacity = '0.6';
+    }
+    
+    // Add active state to current page
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('#navigation a');
+    
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.style.color = '#4CAF50';
+            link.style.fontWeight = '600';
+        }
+    });
+});
+</script> 
