@@ -1,4 +1,4 @@
-# Job Portal - Flask Application
+<!-- # Job Portal - Flask Application
 
 A modern job portal built with Flask, featuring user authentication, job posting, and application management.
 
@@ -161,4 +161,174 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For support, email support@jobportal.com or create an issue in the repository. 
+For support, email support@jobportal.com or create an issue in the repository.  -->
+
+# 💼 Job Portal - Flask Web Application
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
+  <img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
+</p>
+
+<p align="center">
+  <strong>A modern job portal web app built with Flask.</strong><br>
+  Role-based access, secure authentication, job listing, and application tracking all in one place.
+</p>
+
+---
+
+## 🚀 Features
+
+### 🔐 Authentication System
+- Secure user signup with email and password confirmation
+- Login with username or email
+- CSRF protection with Flask-WTF
+- Session management using Flask-Login
+
+### 👥 User Roles
+- **Job Seeker**: Browse and apply for jobs
+- **Employer**: Post, manage, and update job listings
+
+### 💼 Job Management
+- Post and edit jobs (Employers only)
+- View and filter job listings
+- Apply to jobs with a single click
+
+### 🎨 UI & UX
+- Responsive Bootstrap design
+- Real-time form validation with messages
+- Flash messages for user feedback
+
+---
+
+## 📁 Project Structure
+
+JOB APP/
+├── app.py # Main Flask application
+├── forms.py # Flask-WTF forms
+├── models/
+│ └── Job.py # SQLAlchemy models
+├── templates/ # Jinja2 templates
+│ ├── base.html
+│ ├── login.html
+│ ├── signup.html
+│ ├── profile.html
+│ ├── Job_L.html
+│ └── ...
+├── static/ # CSS, JS, icons
+├── utils/
+│ └── db.py # DB config
+├── instance/ # SQLite DB files
+├── requirements.txt # Python dependencies
+└── README.md # This file
+
+---
+
+## ⚙️ Installation
+
+### ✅ Prerequisites
+- Python 3.8+
+- pip
+
+### 🛠️ Setup Instructions
+
+```bash
+# 1. Clone the repo
+git clone <repo-url>
+cd "JOB APP"
+
+# 2. Create a virtual environment
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Create a .env file
+# .env
+SECRET_KEY=your-secret-key
+MAIL_USERNAME=youremail@example.com
+MAIL_PASSWORD=your-app-password
+
+# 5. Initialize the database
+python -c "from app import app, db; app.app_context().push(); db.create_all()"
+
+# 6. Run the server
+python app.py
+
+
+## 🌐 Access the Portal
+
+Visit [http://127.0.0.1:5001](http://127.0.0.1:5001) in your browser to access the portal.
+
+---
+
+## 🧑‍💻 Usage Guide
+
+### 👨‍🎓 For Job Seekers
+- Register with the **"Job Seeker"** role  
+- Browse job listings  
+- Apply to jobs  
+- View your profile  
+
+### 🧑‍💼 For Employers
+- Register with the **"Employer"** role  
+- Post and manage jobs  
+- View applicants  
+
+---
+
+## 🔒 Security Highlights
+- Password hashing via `werkzeug.security`  
+- CSRF protection with Flask-WTF  
+- Role-based access control  
+- Input validation on all forms  
+
+---
+
+## 📡 API Endpoints
+
+| Route                  | Description             |
+|------------------------|-------------------------|
+| `/signup`              | User Registration       |
+| `/login`               | User Login              |
+| `/logout`              | Logout                  |
+| `/profile`             | User Profile            |
+| `/Job_L`               | Job Listings            |
+| `/submit`              | Post a Job              |
+| `/apply_job/<id>`      | Apply to a Job          |
+| `/update/<id>`         | Update Job              |
+| `/delete/<id>`         | Delete Job              |
+| `/contact`             | Contact Page            |
+| `/about`               | About Page              |
+| `/`                    | Home Page               |
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository  
+2. Create your feature branch  
+   ```bash
+   git checkout -b feature/awesome
+3. Commit your changes
+   ```bash
+   git commit -m 'Add awesome feature'
+4. Push to the branch
+   ```bash
+   git push origin feature/awesome
+5. Open a Pull Request
+
+## 👨‍🎓 Author
+
+Developed with ❤️ by  **B. Chaitanya**  
+
+- **GitHub**: [bchaitanya92](https://github.com/bchaitanya92)  
+- **LinkedIn**: [BOURISETTI CHAITANYA](https://www.linkedin.com/in/b-chaitanya)
